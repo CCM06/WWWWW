@@ -10,224 +10,159 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+font-family: Arial, Helvetica, sans-serif;
 }
 
 body{
 background:linear-gradient(135deg,#00c6ff,#0072ff);
 display:flex;
 justify-content:center;
-}
-
-.wrapper{
-width:100%;
-max-width:1200px;
+align-items:center;
 height:100vh;
-display:flex;
-flex-direction:column;
-}
-
-.titulo{
-text-align:center;
-font-size:28px;
-font-weight:bold;
-color:white;
-padding:10px;
-text-shadow:2px 2px #000;
 }
 
 .container{
-flex:1;
-display:flex;
-gap:10px;
-padding:10px;
-}
-
-.board{
-flex:2;
-display:grid;
-grid-template-columns:repeat(5,1fr);
-gap:8px;
-}
-
-.casa{
-background:#fff;
-border-radius:12px;
-padding:6px;
-text-align:center;
-font-size:13px;
-font-weight:bold;
-box-shadow:0 4px #999;
-}
-
-.preservacao{background:#b8f0b0;}
-.invasao{background:#ffb3b3;}
-.regular{background:#b3dcff;}
-.especial{background:#ffe066;}
-
-.pino{font-size:18px;}
-
-.panel{
-flex:1;
+width:95%;
+max-width:600px;
 background:white;
-border-radius:15px;
-padding:15px;
-display:flex;
-flex-direction:column;
-gap:12px;
-}
-
-.btn{
-background:#00c853;
-color:white;
-border:none;
-padding:15px;
-font-size:18px;
-border-radius:10px;
-cursor:pointer;
-}
-
-.modal{
-position:fixed;
-top:0;
-left:0;
-width:100%;
-height:100%;
-background:rgba(0,0,0,0.7);
-display:none;
-align-items:center;
-justify-content:center;
-}
-
-.modal-box{
-background:#fff176;
-padding:25px;
 border-radius:20px;
-width:90%;
-max-width:500px;
+padding:25px;
 text-align:center;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.titulo{
+font-size:28px;
+font-weight:bold;
+margin-bottom:10px;
+}
+
+.pontos{
+font-size:18px;
+margin-bottom:15px;
+}
+
+.pergunta{
+font-size:22px;
+font-weight:bold;
+margin-bottom:20px;
 }
 
 .opcao{
 background:#ff9800;
-margin:6px;
+color:white;
 padding:12px;
+margin:8px 0;
 border-radius:10px;
 cursor:pointer;
-color:white;
 font-weight:bold;
+transition:0.2s;
+}
+
+.opcao:hover{
+background:#e68900;
 }
 
 .feedback{
-margin-top:10px;
+margin-top:15px;
+font-size:18px;
 font-weight:bold;
 }
 
-#btnContinuar{
-display:none;
+.explicacao{
 margin-top:10px;
+font-size:16px;
+}
+
+.botao{
+margin-top:20px;
 padding:12px;
+width:100%;
 border:none;
 border-radius:10px;
 background:#00c853;
 color:white;
-font-weight:bold;
+font-size:18px;
 cursor:pointer;
+display:none;
 }
 
-@media(max-width:768px){
-.container{flex-direction:column;}
-.board{grid-template-columns:repeat(4,1fr);}
+@media(max-width:500px){
+.pergunta{font-size:18px;}
 }
 </style>
 </head>
 
 <body>
 
-<div class="wrapper">
-
-<div class="titulo">🌆 URBANOPOLY 🎲</div>
-
 <div class="container">
 
-<div class="board" id="board"></div>
+<div class="titulo">🌆 URBANOPOLY QUIZ</div>
 
-<div class="panel">
-<div>🔵 Jogador 1: <span id="p1">0</span></div>
-<div>🔴 Jogador 2: <span id="p2">0</span></div>
+<div class="pontos">Pontuação: <span id="pontos">0</span></div>
 
-<button id="btnJogar" class="btn">🎲 Jogar (ENTER)</button>
+<div class="pergunta" id="pergunta"></div>
 
-<div id="log">Pressione ENTER ou clique em jogar</div>
-</div>
-
-</div>
-
-</div>
-
-<!-- MODAL -->
-<div class="modal" id="modal">
-<div class="modal-box">
-<div id="pergunta"></div>
 <div id="opcoes"></div>
-<div id="feedback" class="feedback"></div>
-<button id="btnContinuar">CONTINUAR ▶</button>
-</div>
+
+<div class="feedback" id="feedback"></div>
+<div class="explicacao" id="explicacao"></div>
+
+<button class="botao" id="btnProx">CONTINUAR ▶</button>
+
 </div>
 
 <script>
 
-/* ===== TODAS AS PERGUNTAS ===== */
-const basePerguntas = [
+/* ===== PERGUNTAS ===== */
+const perguntas = [
 
 {
 pergunta:"O que é uma ocupação?",
 opcoes:[
-"Pessoas construindo casas sem autorização em área protegida",
-"Uma festa na rua",
-"Um time de futebol",
+"Pessoas construindo casas sem autorização",
+"Uma festa",
+"Um time",
 "Plantar árvores"
 ],
 correta:0,
-explicacao:"Ocupação é quando famílias ocupam áreas que não são delas."
+explicacao:"Ocupação é quando pessoas usam um terreno sem autorização."
 },
 
 {
-pergunta:"Por que as famílias ocupam terrenos?",
+pergunta:"Por que algumas famílias vão morar em novos lugares da cidade?",
 opcoes:[
-"Porque não têm dinheiro para comprar uma casa",
+"Porque estão procurando um lugar melhor para morar",
 "Porque gostam de morar no mato",
 "Para criar animais",
-"Para fazer plantação"
+"Para plantar"
 ],
 correta:0,
-explicacao:"Muitas famílias não têm onde morar."
+explicacao:"As famílias buscam conforto e segurança."
 },
 
 {
-pergunta:"O que é uma ÁREA DE PRESERVAÇÃO?",
+pergunta:"O que é uma área de preservação?",
 opcoes:[
-"Lugar onde não se pode construir",
-"Um estacionamento",
-"Um shopping",
-"Uma rua"
+"Lugar protegido da natureza",
+"Shopping",
+"Rua",
+"Estacionamento"
 ],
 correta:0,
-explicacao:"São áreas protegidas para a natureza."
+explicacao:"São áreas que devemos cuidar."
 },
 
-/* ===== NOVAS ===== */
-
 {
-pergunta:"Qual profissional orienta calçadas drenantes?",
+pergunta:"Quem ensina reciclagem?",
 opcoes:[
-"Engenheiro ambiental ou urbanista",
+"Educador ambiental",
 "Cabeleireiro",
-"Vendedor",
-"Jogador"
+"Jogador",
+"Vendedor"
 ],
 correta:0,
-explicacao:"Ajuda a evitar enchentes."
+explicacao:"Ensina cuidar do planeta."
 },
 
 {
@@ -243,7 +178,7 @@ explicacao:"Produz energia limpa."
 },
 
 {
-pergunta:"Quem ajuda a limpar rios poluídos?",
+pergunta:"Quem ajuda a limpar rios?",
 opcoes:[
 "Engenheiro ambiental ou biólogo",
 "Padeiro",
@@ -255,27 +190,15 @@ explicacao:"Recupera rios."
 },
 
 {
-pergunta:"Quem ensina reciclagem?",
-opcoes:[
-"Educador ambiental",
-"Vendedor",
-"Cabeleireiro",
-"Jogador"
-],
-correta:0,
-explicacao:"Ensina separar lixo."
-},
-
-{
 pergunta:"Quem instala luz automática?",
 opcoes:[
-"Eletricista automação",
+"Eletricista",
 "Professor",
 "Cozinheiro",
 "Motorista"
 ],
 correta:0,
-explicacao:"Economiza energia."
+explicacao:"Ajuda a economizar energia."
 },
 
 {
@@ -287,43 +210,7 @@ opcoes:[
 "Carteiro"
 ],
 correta:0,
-explicacao:"Protege natureza."
-},
-
-{
-pergunta:"Quem poda árvores perto de fios?",
-opcoes:[
-"Técnico especializado",
-"Padeiro",
-"Jogador",
-"Garçom"
-],
-correta:0,
-explicacao:"Evita acidentes."
-},
-
-{
-pergunta:"Qual benefício plantar árvores?",
-opcoes:[
-"Selo verde ou IPTU menor",
-"Multa",
-"Aumento imposto",
-"RG"
-],
-correta:0,
-explicacao:"Incentivo sustentável."
-},
-
-{
-pergunta:"Quem planeja rede elétrica sustentável?",
-opcoes:[
-"Engenheiro eletricista ambiental",
-"Cabeleireiro",
-"Vendedor",
-"Motorista"
-],
-correta:0,
-explicacao:"Protege o ambiente."
+explicacao:"Protege a natureza."
 },
 
 {
@@ -335,154 +222,89 @@ opcoes:[
 "Dentista"
 ],
 correta:0,
-explicacao:"Economiza água."
-},
-
-{
-pergunta:"Quem fiscaliza poluição da água?",
-opcoes:[
-"Fiscal hídrico",
-"Carteiro",
-"Garçom",
-"Ator"
-],
-correta:0,
-explicacao:"Protege rios."
-},
-
-{
-pergunta:"Quem instala LED nas ruas?",
-opcoes:[
-"Técnico iluminação pública",
-"Professor",
-"Vendedor",
-"Cabeleireiro"
-],
-correta:0,
-explicacao:"Economiza energia."
+explicacao:"Ajuda a economizar água."
 }
 
 ];
 
 /* ===== SISTEMA ===== */
-let perguntasDisponiveis=[...basePerguntas];
 
-function getPergunta(){
-if(perguntasDisponiveis.length===0){
-perguntasDisponiveis=[...basePerguntas];
-}
-let i=Math.floor(Math.random()*perguntasDisponiveis.length);
-let p=perguntasDisponiveis[i];
-perguntasDisponiveis.splice(i,1);
-return p;
-}
+let lista=[...perguntas];
+let pontos=0;
 
-let jogadores=[{p:0,pts:0},{p:0,pts:0}];
-let vez=0;
-let esperando=false;
+function embaralhar(q){
+let ops=q.opcoes.map((o,i)=>({t:o,c:i===q.correta}));
 
-const btnContinuar=document.getElementById("btnContinuar");
-const btnJogar=document.getElementById("btnJogar");
-
-/* TABULEIRO */
-const casas=Array.from({length:20},(_,i)=>({
-tipo:["preservacao","invasao","regular","especial"][i%4]
-}));
-
-function desenhar(){
-let b=document.getElementById("board");
-b.innerHTML="";
-casas.forEach((c,i)=>{
-let d=document.createElement("div");
-d.className="casa "+c.tipo;
-d.innerHTML="Casa "+(i+1);
-
-jogadores.forEach((j,idx)=>{
-if(j.p===i){
-d.innerHTML+=`<div class="pino">${idx===0?"🔵":"🔴"}</div>`;
-}
-});
-
-b.appendChild(d);
-});
-}
-desenhar();
-
-/* ROLAR */
-function rolar(){
-if(esperando) return;
-
-let d=Math.floor(Math.random()*6)+1;
-let j=jogadores[vez];
-
-j.p+=d;
-if(j.p>=19) j.p=19;
-
-document.getElementById("log").innerText=
-`Jogador ${vez+1} tirou ${d}`;
-
-desenhar();
-mostrarPergunta();
+for(let i=ops.length-1;i>0;i--){
+let j=Math.floor(Math.random()*(i+1));
+[ops[i],ops[j]]=[ops[j],ops[i]];
 }
 
-/* PERGUNTA */
-function mostrarPergunta(){
-let q=getPergunta();
+return{
+pergunta:q.pergunta,
+opcoes:ops.map(o=>o.t),
+correta:ops.findIndex(o=>o.c),
+explicacao:q.explicacao
+};
+}
 
-modal.style.display="flex";
+function novaPergunta(){
+
+if(lista.length===0){
+lista=[...perguntas];
+}
+
+let i=Math.floor(Math.random()*lista.length);
+let q=embaralhar(lista[i]);
+lista.splice(i,1);
+
 pergunta.innerText=q.pergunta;
-
 opcoes.innerHTML="";
 feedback.innerText="";
-btnContinuar.style.display="none";
+explicacao.innerText="";
+btnProx.style.display="none";
 
-q.opcoes.forEach((txt,i)=>{
-let btn=document.createElement("div");
-btn.className="opcao";
-btn.innerText=txt;
+q.opcoes.forEach((txt,idx)=>{
+let div=document.createElement("div");
+div.className="opcao";
+div.innerText=txt;
 
-btn.onclick=()=>{
-if(i===q.correta){
-feedback.innerText="✅ "+q.explicacao;
-jogadores[vez].pts+=10;
+div.onclick=()=>{
+if(idx===q.correta){
+feedback.innerText="✅ Acertou!";
+pontos+=10;
 }else{
-feedback.innerText="❌ "+q.explicacao;
-jogadores[vez].pts-=5;
+feedback.innerText="❌ Errou!";
+pontos-=5;
 }
 
-p1.innerText=jogadores[0].pts;
-p2.innerText=jogadores[1].pts;
-
-esperando=true;
-btnContinuar.style.display="block";
+explicacao.innerText=q.explicacao;
+pontosEl.innerText=pontos;
+btnProx.style.display="block";
 };
 
-opcoes.appendChild(btn);
+opcoes.appendChild(div);
 });
 }
 
-/* CONTINUAR */
-function continuar(){
-modal.style.display="none";
-vez=vez===0?1:0;
-esperando=false;
-}
-
-btnContinuar.onclick=continuar;
+btnProx.onclick=novaPergunta;
 
 /* ENTER */
 document.addEventListener("keydown",(e)=>{
-if(e.key==="Enter"){
-if(esperando){
-continuar();
-}else{
-rolar();
-}
+if(e.key==="Enter" && btnProx.style.display==="block"){
+novaPergunta();
 }
 });
 
-/* BOTÃO */
-btnJogar.onclick=rolar;
+const pergunta=document.getElementById("pergunta");
+const opcoes=document.getElementById("opcoes");
+const feedback=document.getElementById("feedback");
+const explicacao=document.getElementById("explicacao");
+const btnProx=document.getElementById("btnProx");
+const pontosEl=document.getElementById("pontos");
+
+/* INICIAR */
+novaPergunta();
 
 </script>
 
