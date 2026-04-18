@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>URBANOPOLY</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body{
+background:linear-gradient(135deg,#00c6ff,#0072ff);
+height:100vh;
+display:flex;
+flex-direction:column;
+color:#222;
+}
+
+.titulo{
+text-align:center;
+font-size:30px;
+font-weight:bold;
+color:white;
+padding:10px;
+text-shadow:2px 2px #000;
+}
+
+.container{
+flex:1;
+display:flex;
+gap:10px;
+padding:10px;
+flex-wrap:wrap;
+}
+
+.board{
+flex:2;
+display:grid;
+grid-template-columns:repeat(5,1fr);
+gap:8px;
+}
+
+.casa{
+background:#fff;
+border-radius:12px;
+padding:6px;
+text-align:center;
+font-size:12px;
+font-weight:bold;
+box-shadow:0 4px #999;
+transition:0.2s;
+}
+
+.casa:hover{ transform:scale(1.05); }
+
+.preservacao{background:#b8f0b0;}
+.invasao{background:#ffb3b3;}
+.regular{background:#b3dcff;}
+.especial{background:#ffe066;}
+
+.pino{ font-size:18px; }
+
+.panel{
+flex:1;
+background:white;
+border-radius:15px;
+padding:10px;
+display:flex;
+flex-direction:column;
+gap:10px;
+}
+
+.btn{
+background:#00c853;
+color:white;
+border:none;
+padding:15px;
+font-size:18px;
+border-radius:10px;
+cursor:pointer;
+}
+
+.modal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+display:none;
+align-items:center;
+justify-content:center;
+}
+
+.modal-box{
+background:linear-gradient(145deg,#fff176,#ffd54f);
+padding:20px;
+border-radius:20px;
+width:90%;
+max-width:450px;
+text-align:center;
+}
+
+.opcao{
+background:#ff9800;
+margin:6px;
+padding:12px;
+border-radius:10px;
+cursor:pointer;
+font-weight:bold;
+color:white;
+}
+
+.feedback{
+margin-top:10px;
+font-weight:bold;
+font-size:16px;
+}
+
+@media(max-width:768px){
+.container{flex-direction:column;}
+.board{grid-template-columns:repeat(4,1fr);}
+}
+</style>
+</head>
+
+<body>
+
+<div class="titulo">🌆 URBANOPOLY 🎲</div>
+
+<div class="container">
+
+<div class="board" id="board"></div>
+
+<div class="panel">
+<div>🔵 Jogador 1: <span id="p1">0</span></div>
+<div>🔴 Jogador 2: <span id="p2">0</span></div>
+
+<button class="btn" onclick="rolar()">🎲 Jogar</button>
+
+<div id="log">Clique para começar!</div>
+</div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+<div class="modal-box">
+<div id="pergunta"></div>
+<div id="opcoes"></div>
+<div id="feedback" class="feedback"></div>
+</div>
+</div>
+
+<script>
+
+/* ===== PERGUNTAS COMPLETAS ===== */
+const basePerguntas = [
+
+{
+pergunta:"Qual profissional orienta uma comunidade a construir calçadas drenantes?",
+opcoes:["Engenheiro ambiental ou urbanista","Cabeleireiro","Vendedor de sorvete","Jogador de futebol"],
+correta:0,
+explicacao:"Esses profissionais criam calçadas que absorvem água e evitam enchentes."
+},
+
+{
+pergunta:"Quem trabalha com energia do vento?",
+opcoes:["Técnico em energia eólica","Garçom","Motorista","Dentista"],
+correta:0,
+explicacao:"Eles cuidam dos aerogeradores que produzem energia limpa."
+},
+
+{
+pergunta:"Quem ajuda a limpar córregos poluídos?",
+opcoes:["Engenheiro ambiental ou biólogo","Padeiro","Carteiro","Ator"],
+correta:0,
+explicacao:"Eles recuperam rios e melhoram o ambiente."
+},
+
+{
+pergunta:"Quem ensina reciclagem?",
+opcoes:["Educador ambiental","Vendedor","Cabeleireiro","Jogador"],
+correta:0,
+explicacao:"Ensina a separar lixo e cuidar do planeta."
+},
+
+{
+pergunta:"Quem instala luz automática?",
+opcoes:["Eletricista de automação","Professor","Cozinheiro","Motorista"],
+correta:0,
+explicacao:"Usa sensores para economizar energia."
+},
+
+{
+pergunta:"Quem fiscaliza áreas verdes?",
+opcoes:["Fiscal ambiental","Dançarino","Vendedor","Carteiro"],
+correta:0,
+explicacao:"Protege áreas naturais da cidade."
+},
+
+{
+pergunta:"Quem poda árvores perto de fios?",
+opcoes:["Técnico especializado","Padeiro","Jogador","Garçom"],
+correta:0,
+explicacao:"Evita acidentes e quedas de energia."
+},
+
+{
+pergunta:"Qual benefício plantar árvores?",
+opcoes:["Selo verde ou IPTU menor","Multa","Aumento imposto","RG"],
+correta:0,
+explicacao:"Prefeituras incentivam práticas sustentáveis."
+},
+
+{
+pergunta:"Quem planeja rede elétrica sem prejudicar natureza?",
+opcoes:["Engenheiro eletricista ambiental","Cabeleireiro","Vendedor","Motorista"],
+correta:0,
+explicacao:"Define trajetos que preservam o meio ambiente."
+},
+
+{
+pergunta:"Quem cria sistema de captação de chuva?",
+opcoes:["Engenheiro hidráulico","Padeiro","Jogador","Dentista"],
+correta:0,
+explicacao:"Ajuda a economizar água e evitar enchentes."
+},
+
+{
+pergunta:"Quem fiscaliza poluição da água?",
+opcoes:["Fiscal hídrico","Carteiro","Garçom","Ator"],
+correta:0,
+explicacao:"Protege rios e a saúde da população."
+},
+
+{
+pergunta:"Quem instala iluminação LED nas ruas?",
+opcoes:["Técnico de iluminação pública","Professor","Vendedor","Cabeleireiro"],
+correta:0,
+explicacao:"Economiza energia e melhora a iluminação."
+}
+
+];
+
+/* SISTEMA */
+let perguntasDisponiveis=[...basePerguntas];
+
+function getPergunta(){
+if(perguntasDisponiveis.length===0){
+perguntasDisponiveis=[...basePerguntas];
+}
+let i=Math.floor(Math.random()*perguntasDisponiveis.length);
+let p=perguntasDisponiveis[i];
+perguntasDisponiveis.splice(i,1);
+return p;
+}
+
+let jogadores=[{p:0,pts:0},{p:0,pts:0}];
+let vez=0;
+let esperando=false;
+
+/* TABULEIRO */
+const casas=Array.from({length:20},(_,i)=>({
+tipo:["preservacao","invasao","regular","especial"][i%4],
+num:i
+}));
+
+function desenhar(){
+let b=document.getElementById("board");
+b.innerHTML="";
+casas.forEach((c,i)=>{
+let d=document.createElement("div");
+d.className="casa "+c.tipo;
+d.innerHTML="Casa "+(i+1);
+
+jogadores.forEach((j,idx)=>{
+if(j.p===i){
+d.innerHTML+=`<div class="pino">${idx===0?"🔵":"🔴"}</div>`;
+}
+});
+
+b.appendChild(d);
+});
+}
+desenhar();
+
+/* DADO */
+function rolar(){
+if(esperando) return;
+
+let d=Math.floor(Math.random()*6)+1;
+let j=jogadores[vez];
+
+j.p+=d;
+if(j.p>=19) j.p=19;
+
+document.getElementById("log").innerText=
+`Jogador ${vez+1} tirou ${d}`;
+
+desenhar();
+mostrarPergunta();
+}
+
+/* PERGUNTA */
+function mostrarPergunta(){
+let q=getPergunta();
+
+document.getElementById("modal").style.display="flex";
+document.getElementById("pergunta").innerText=q.pergunta;
+
+let op=document.getElementById("opcoes");
+op.innerHTML="";
+document.getElementById("feedback").innerText="";
+
+q.opcoes.forEach((txt,i)=>{
+let btn=document.createElement("div");
+btn.className="opcao";
+btn.innerText=txt;
+
+btn.onclick=()=>{
+let f=document.getElementById("feedback");
+
+if(i===q.correta){
+f.innerText="✅ "+q.explicacao;
+jogadores[vez].pts+=10;
+}else{
+f.innerText="❌ "+q.explicacao;
+jogadores[vez].pts-=5;
+}
+
+document.getElementById("p1").innerText=jogadores[0].pts;
+document.getElementById("p2").innerText=jogadores[1].pts;
+
+esperando=true;
+};
+
+op.appendChild(btn);
+});
+}
+
+/* ENTER CONTROLA */
+document.addEventListener("keydown",(e)=>{
+if(e.key==="Enter" && esperando){
+document.getElementById("modal").style.display="none";
+vez=vez===0?1:0;
+esperando=false;
+}
+});
+
+</script>
+
+</body>
+</html>
