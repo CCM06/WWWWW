@@ -15,15 +15,21 @@ font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 
 body{
 background:linear-gradient(135deg,#00c6ff,#0072ff);
+display:flex;
+justify-content:center;
+}
+
+.wrapper{
+width:100%;
+max-width:1200px;
 height:100vh;
 display:flex;
 flex-direction:column;
-color:#222;
 }
 
 .titulo{
 text-align:center;
-font-size:30px;
+font-size:28px;
 font-weight:bold;
 color:white;
 padding:10px;
@@ -35,7 +41,6 @@ flex:1;
 display:flex;
 gap:10px;
 padding:10px;
-flex-wrap:wrap;
 }
 
 .board{
@@ -50,29 +55,26 @@ background:#fff;
 border-radius:12px;
 padding:6px;
 text-align:center;
-font-size:12px;
+font-size:13px;
 font-weight:bold;
 box-shadow:0 4px #999;
-transition:0.2s;
 }
-
-.casa:hover{ transform:scale(1.05); }
 
 .preservacao{background:#b8f0b0;}
 .invasao{background:#ffb3b3;}
 .regular{background:#b3dcff;}
 .especial{background:#ffe066;}
 
-.pino{ font-size:18px; }
+.pino{font-size:18px;}
 
 .panel{
 flex:1;
 background:white;
 border-radius:15px;
-padding:10px;
+padding:15px;
 display:flex;
 flex-direction:column;
-gap:10px;
+gap:12px;
 }
 
 .btn{
@@ -83,6 +85,10 @@ padding:15px;
 font-size:18px;
 border-radius:10px;
 cursor:pointer;
+}
+
+.btn:focus{
+outline:3px solid gold;
 }
 
 .modal{
@@ -98,11 +104,11 @@ justify-content:center;
 }
 
 .modal-box{
-background:linear-gradient(145deg,#fff176,#ffd54f);
-padding:20px;
+background:#fff176;
+padding:25px;
 border-radius:20px;
 width:90%;
-max-width:450px;
+max-width:500px;
 text-align:center;
 }
 
@@ -112,24 +118,42 @@ margin:6px;
 padding:12px;
 border-radius:10px;
 cursor:pointer;
-font-weight:bold;
 color:white;
+font-weight:bold;
 }
 
 .feedback{
 margin-top:10px;
 font-weight:bold;
-font-size:16px;
 }
 
+#btnContinuar{
+display:none;
+margin-top:10px;
+padding:12px;
+border:none;
+border-radius:10px;
+background:#00c853;
+color:white;
+font-weight:bold;
+cursor:pointer;
+}
+
+/* MOBILE */
 @media(max-width:768px){
-.container{flex-direction:column;}
-.board{grid-template-columns:repeat(4,1fr);}
+.container{
+flex-direction:column;
+}
+.board{
+grid-template-columns:repeat(4,1fr);
+}
 }
 </style>
 </head>
 
 <body>
+
+<div class="wrapper">
 
 <div class="titulo">🌆 URBANOPOLY 🎲</div>
 
@@ -141,9 +165,11 @@ font-size:16px;
 <div>🔵 Jogador 1: <span id="p1">0</span></div>
 <div>🔴 Jogador 2: <span id="p2">0</span></div>
 
-<button class="btn" onclick="rolar()">🎲 Jogar</button>
+<button id="btnJogar" class="btn">🎲 Jogar (ENTER)</button>
 
-<div id="log">Clique para começar!</div>
+<div id="log">Pressione ENTER ou clique em jogar</div>
+</div>
+
 </div>
 
 </div>
@@ -154,101 +180,28 @@ font-size:16px;
 <div id="pergunta"></div>
 <div id="opcoes"></div>
 <div id="feedback" class="feedback"></div>
+<button id="btnContinuar">CONTINUAR ▶</button>
 </div>
 </div>
 
 <script>
 
-/* ===== PERGUNTAS COMPLETAS ===== */
+/* PERGUNTAS */
 const basePerguntas = [
-
-{
-pergunta:"Qual profissional orienta uma comunidade a construir calçadas drenantes?",
-opcoes:["Engenheiro ambiental ou urbanista","Cabeleireiro","Vendedor de sorvete","Jogador de futebol"],
-correta:0,
-explicacao:"Esses profissionais criam calçadas que absorvem água e evitam enchentes."
-},
-
 {
 pergunta:"Quem trabalha com energia do vento?",
 opcoes:["Técnico em energia eólica","Garçom","Motorista","Dentista"],
 correta:0,
-explicacao:"Eles cuidam dos aerogeradores que produzem energia limpa."
+explicacao:"Energia limpa através do vento."
 },
-
-{
-pergunta:"Quem ajuda a limpar córregos poluídos?",
-opcoes:["Engenheiro ambiental ou biólogo","Padeiro","Carteiro","Ator"],
-correta:0,
-explicacao:"Eles recuperam rios e melhoram o ambiente."
-},
-
 {
 pergunta:"Quem ensina reciclagem?",
-opcoes:["Educador ambiental","Vendedor","Cabeleireiro","Jogador"],
+opcoes:["Educador ambiental","Cabeleireiro","Jogador","Vendedor"],
 correta:0,
-explicacao:"Ensina a separar lixo e cuidar do planeta."
-},
-
-{
-pergunta:"Quem instala luz automática?",
-opcoes:["Eletricista de automação","Professor","Cozinheiro","Motorista"],
-correta:0,
-explicacao:"Usa sensores para economizar energia."
-},
-
-{
-pergunta:"Quem fiscaliza áreas verdes?",
-opcoes:["Fiscal ambiental","Dançarino","Vendedor","Carteiro"],
-correta:0,
-explicacao:"Protege áreas naturais da cidade."
-},
-
-{
-pergunta:"Quem poda árvores perto de fios?",
-opcoes:["Técnico especializado","Padeiro","Jogador","Garçom"],
-correta:0,
-explicacao:"Evita acidentes e quedas de energia."
-},
-
-{
-pergunta:"Qual benefício plantar árvores?",
-opcoes:["Selo verde ou IPTU menor","Multa","Aumento imposto","RG"],
-correta:0,
-explicacao:"Prefeituras incentivam práticas sustentáveis."
-},
-
-{
-pergunta:"Quem planeja rede elétrica sem prejudicar natureza?",
-opcoes:["Engenheiro eletricista ambiental","Cabeleireiro","Vendedor","Motorista"],
-correta:0,
-explicacao:"Define trajetos que preservam o meio ambiente."
-},
-
-{
-pergunta:"Quem cria sistema de captação de chuva?",
-opcoes:["Engenheiro hidráulico","Padeiro","Jogador","Dentista"],
-correta:0,
-explicacao:"Ajuda a economizar água e evitar enchentes."
-},
-
-{
-pergunta:"Quem fiscaliza poluição da água?",
-opcoes:["Fiscal hídrico","Carteiro","Garçom","Ator"],
-correta:0,
-explicacao:"Protege rios e a saúde da população."
-},
-
-{
-pergunta:"Quem instala iluminação LED nas ruas?",
-opcoes:["Técnico de iluminação pública","Professor","Vendedor","Cabeleireiro"],
-correta:0,
-explicacao:"Economiza energia e melhora a iluminação."
+explicacao:"Ensina cuidar do planeta."
 }
-
 ];
 
-/* SISTEMA */
 let perguntasDisponiveis=[...basePerguntas];
 
 function getPergunta(){
@@ -265,10 +218,12 @@ let jogadores=[{p:0,pts:0},{p:0,pts:0}];
 let vez=0;
 let esperando=false;
 
+const btnContinuar=document.getElementById("btnContinuar");
+const btnJogar=document.getElementById("btnJogar");
+
 /* TABULEIRO */
 const casas=Array.from({length:20},(_,i)=>({
-tipo:["preservacao","invasao","regular","especial"][i%4],
-num:i
+tipo:["preservacao","invasao","regular","especial"][i%4]
 }));
 
 function desenhar(){
@@ -290,7 +245,7 @@ b.appendChild(d);
 }
 desenhar();
 
-/* DADO */
+/* ROLAR */
 function rolar(){
 if(esperando) return;
 
@@ -311,12 +266,12 @@ mostrarPergunta();
 function mostrarPergunta(){
 let q=getPergunta();
 
-document.getElementById("modal").style.display="flex";
-document.getElementById("pergunta").innerText=q.pergunta;
+modal.style.display="flex";
+pergunta.innerText=q.pergunta;
 
-let op=document.getElementById("opcoes");
-op.innerHTML="";
-document.getElementById("feedback").innerText="";
+opcoes.innerHTML="";
+feedback.innerText="";
+btnContinuar.style.display="none";
 
 q.opcoes.forEach((txt,i)=>{
 let btn=document.createElement("div");
@@ -324,34 +279,50 @@ btn.className="opcao";
 btn.innerText=txt;
 
 btn.onclick=()=>{
-let f=document.getElementById("feedback");
-
 if(i===q.correta){
-f.innerText="✅ "+q.explicacao;
+feedback.innerText="✅ "+q.explicacao;
 jogadores[vez].pts+=10;
 }else{
-f.innerText="❌ "+q.explicacao;
+feedback.innerText="❌ "+q.explicacao;
 jogadores[vez].pts-=5;
 }
 
-document.getElementById("p1").innerText=jogadores[0].pts;
-document.getElementById("p2").innerText=jogadores[1].pts;
+p1.innerText=jogadores[0].pts;
+p2.innerText=jogadores[1].pts;
 
 esperando=true;
+btnContinuar.style.display="block";
 };
 
-op.appendChild(btn);
+opcoes.appendChild(btn);
 });
 }
 
-/* ENTER CONTROLA */
-document.addEventListener("keydown",(e)=>{
-if(e.key==="Enter" && esperando){
-document.getElementById("modal").style.display="none";
+/* CONTINUAR */
+function continuar(){
+modal.style.display="none";
 vez=vez===0?1:0;
 esperando=false;
 }
+
+btnContinuar.onclick=continuar;
+
+/* ENTER GLOBAL */
+document.addEventListener("keydown",(e)=>{
+if(e.key==="Enter"){
+if(esperando){
+continuar();
+}else{
+rolar();
+}
+}
 });
+
+/* BOTÃO */
+btnJogar.onclick=rolar;
+
+/* FOCO AUTOMÁTICO */
+window.onload=()=>btnJogar.focus();
 
 </script>
 
