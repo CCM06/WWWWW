@@ -87,10 +87,6 @@ border-radius:10px;
 cursor:pointer;
 }
 
-.btn:focus{
-outline:3px solid gold;
-}
-
 .modal{
 position:fixed;
 top:0;
@@ -139,14 +135,9 @@ font-weight:bold;
 cursor:pointer;
 }
 
-/* MOBILE */
 @media(max-width:768px){
-.container{
-flex-direction:column;
-}
-.board{
-grid-template-columns:repeat(4,1fr);
-}
+.container{flex-direction:column;}
+.board{grid-template-columns:repeat(4,1fr);}
 }
 </style>
 </head>
@@ -186,22 +177,194 @@ grid-template-columns:repeat(4,1fr);
 
 <script>
 
-/* PERGUNTAS */
+/* ===== TODAS AS PERGUNTAS ===== */
 const basePerguntas = [
+
+{
+pergunta:"O que é uma ocupação?",
+opcoes:[
+"Pessoas construindo casas sem autorização em área protegida",
+"Uma festa na rua",
+"Um time de futebol",
+"Plantar árvores"
+],
+correta:0,
+explicacao:"Ocupação é quando famílias ocupam áreas que não são delas."
+},
+
+{
+pergunta:"Por que as famílias ocupam terrenos?",
+opcoes:[
+"Porque não têm dinheiro para comprar uma casa",
+"Porque gostam de morar no mato",
+"Para criar animais",
+"Para fazer plantação"
+],
+correta:0,
+explicacao:"Muitas famílias não têm onde morar."
+},
+
+{
+pergunta:"O que é uma ÁREA DE PRESERVAÇÃO?",
+opcoes:[
+"Lugar onde não se pode construir",
+"Um estacionamento",
+"Um shopping",
+"Uma rua"
+],
+correta:0,
+explicacao:"São áreas protegidas para a natureza."
+},
+
+/* ===== NOVAS ===== */
+
+{
+pergunta:"Qual profissional orienta calçadas drenantes?",
+opcoes:[
+"Engenheiro ambiental ou urbanista",
+"Cabeleireiro",
+"Vendedor",
+"Jogador"
+],
+correta:0,
+explicacao:"Ajuda a evitar enchentes."
+},
+
 {
 pergunta:"Quem trabalha com energia do vento?",
-opcoes:["Técnico em energia eólica","Garçom","Motorista","Dentista"],
+opcoes:[
+"Técnico em energia eólica",
+"Garçom",
+"Motorista",
+"Dentista"
+],
 correta:0,
-explicacao:"Energia limpa através do vento."
+explicacao:"Produz energia limpa."
 },
+
+{
+pergunta:"Quem ajuda a limpar rios poluídos?",
+opcoes:[
+"Engenheiro ambiental ou biólogo",
+"Padeiro",
+"Carteiro",
+"Ator"
+],
+correta:0,
+explicacao:"Recupera rios."
+},
+
 {
 pergunta:"Quem ensina reciclagem?",
-opcoes:["Educador ambiental","Cabeleireiro","Jogador","Vendedor"],
+opcoes:[
+"Educador ambiental",
+"Vendedor",
+"Cabeleireiro",
+"Jogador"
+],
 correta:0,
-explicacao:"Ensina cuidar do planeta."
+explicacao:"Ensina separar lixo."
+},
+
+{
+pergunta:"Quem instala luz automática?",
+opcoes:[
+"Eletricista automação",
+"Professor",
+"Cozinheiro",
+"Motorista"
+],
+correta:0,
+explicacao:"Economiza energia."
+},
+
+{
+pergunta:"Quem fiscaliza áreas verdes?",
+opcoes:[
+"Fiscal ambiental",
+"Dançarino",
+"Vendedor",
+"Carteiro"
+],
+correta:0,
+explicacao:"Protege natureza."
+},
+
+{
+pergunta:"Quem poda árvores perto de fios?",
+opcoes:[
+"Técnico especializado",
+"Padeiro",
+"Jogador",
+"Garçom"
+],
+correta:0,
+explicacao:"Evita acidentes."
+},
+
+{
+pergunta:"Qual benefício plantar árvores?",
+opcoes:[
+"Selo verde ou IPTU menor",
+"Multa",
+"Aumento imposto",
+"RG"
+],
+correta:0,
+explicacao:"Incentivo sustentável."
+},
+
+{
+pergunta:"Quem planeja rede elétrica sustentável?",
+opcoes:[
+"Engenheiro eletricista ambiental",
+"Cabeleireiro",
+"Vendedor",
+"Motorista"
+],
+correta:0,
+explicacao:"Protege o ambiente."
+},
+
+{
+pergunta:"Quem cria captação de chuva?",
+opcoes:[
+"Engenheiro hidráulico",
+"Padeiro",
+"Jogador",
+"Dentista"
+],
+correta:0,
+explicacao:"Economiza água."
+},
+
+{
+pergunta:"Quem fiscaliza poluição da água?",
+opcoes:[
+"Fiscal hídrico",
+"Carteiro",
+"Garçom",
+"Ator"
+],
+correta:0,
+explicacao:"Protege rios."
+},
+
+{
+pergunta:"Quem instala LED nas ruas?",
+opcoes:[
+"Técnico iluminação pública",
+"Professor",
+"Vendedor",
+"Cabeleireiro"
+],
+correta:0,
+explicacao:"Economiza energia."
 }
+
 ];
 
+/* ===== SISTEMA ===== */
 let perguntasDisponiveis=[...basePerguntas];
 
 function getPergunta(){
@@ -307,7 +470,7 @@ esperando=false;
 
 btnContinuar.onclick=continuar;
 
-/* ENTER GLOBAL */
+/* ENTER */
 document.addEventListener("keydown",(e)=>{
 if(e.key==="Enter"){
 if(esperando){
@@ -320,9 +483,6 @@ rolar();
 
 /* BOTÃO */
 btnJogar.onclick=rolar;
-
-/* FOCO AUTOMÁTICO */
-window.onload=()=>btnJogar.focus();
 
 </script>
 
